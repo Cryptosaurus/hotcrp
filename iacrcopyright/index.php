@@ -1,7 +1,7 @@
 <?php
 require_once("conf/options.php");
 require_once("src/initweb.php");
-require_once("src/papertable.php");
+require_once("src/paperrequest.php");
 
 function showError($msg) {
   echo "<html><body><h3>" . $msg . "</h3></body></html>";
@@ -12,13 +12,34 @@ if (!$Me || !$Me->is_signed_in()) {
    header("Location: ..");
 }
 
+function getCopyrightOptionId() {
+  global $Conf;
+  $opts = $Conf->options()->normal();
+  foreach ($opts as $id => $paperopt) {
+    if ($paperopt->iacrSetting === 'copyright') {
+      return $id;
+    }
+  }
+  return NULL;
+}
+
 // Retrieve the paper row corresponding to the ID in the URL.
 // This is a bit of hotcrp magic involving the last part of the URL.
 // It validates that the paper by that ID exists, and that the author
 // is authorized to edit the paper.
-if (!($prow = PaperTable::fetch_paper_request($Qreq, $Me))) {
-    showError("Error retrieving paper");
-    exit;
+//if (!($prow = PaperTable::fetch_paper_request($Qreq, $Me))) {
+//    showError("Error retrieving paper");
+//    exit;
+//}
+try {
+  $pr = new PaperRequest($Me, $Qreq, false);
+  $prow = $pr->prow;
+} catch (Redirection $redir) {
+  assert(PaperRequest::simple_qreq($this->qreq));
+  $Conf->redirect($redir->url);
+} catch (PermissionProblem $perm) {
+  print 'An error has occurred - are you sure you have permission?';
+  exit;
 }
 
 require_once("/var/www/util/hotcrp/copyright_db.php");
@@ -106,9 +127,9 @@ foreach ($substitutions as $tag => $val) {
   $copyright = str_replace($tag, $val, $copyright);
 }
 // Now $copyright represents the form that is shown to the user.
-// A POST is used only for submitting the copyright form.
-// post_ok() is used to check the XSRF token from hoturl_post.
-if (!$Qreq->post_ok()) {
+// A POST is used only for submitting the copyright form, and a GET
+// is used for viewing the form.
+if ($Qreq->is_get()) {
   echo $copyright;
   exit;
 }
@@ -223,8 +244,10 @@ try {
   }
 
   // If this works, then set the IACR copyright option to 1 for this paper in
-  // the hotcrp database. The optionId is set to 5 in the create_conf.py script.
-  $Conf->q("INSERT INTO PaperOption set paperId=?,optionId=?,value=?", $prow->paperId, 5, 1);
+  // the hotcrp database.
+  $optionId = getCopyrightOptionId();
+  if ($optionId === NULL) die('No copyright id');
+  $Conf->q("INSERT INTO PaperOption set paperId=?,optionId=?,value=?", $prow->paperId, $optionId, 1);
 
   echo "<html><body><h3>Your copyright form was successfully submitted</h3>";
   echo "<p><strong><a href=\"" . hoturl("paper/" . $prow->paperId . "/edit") . "\">Return</strong></p>";
