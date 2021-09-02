@@ -35,7 +35,7 @@ if (empty($_POST['action']) || $_POST['action'] !== 'finalPaper') {
 try {
   // Note that the ID number is the predefined option value defined in create_conf.py.
   // This used to be hard-coded.
-  $optionId = function getFinalPaperOptionId();
+  $optionId = getFinalPaperOptionId();
   if (!$optionId) {
     showError('Unable to update hotcrp: missing option');
   } else {

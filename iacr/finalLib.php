@@ -1,6 +1,6 @@
 <?php
-require_once "../conf/options.php";
-require_once "../src/initweb.php";
+require_once(dirname(__DIR__)."/conf/options.php");
+require_once(dirname(__DIR__)."/src/initweb.php");
 require_once "/var/www/util/hotcrp/hmac.php";
 
 function getFinalPaperOptionId() {
