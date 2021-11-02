@@ -4,7 +4,7 @@ require_once "../src/initweb.php";
 require_once "includes/header.inc";
 global $Opt, $Conf;
 require_once "finalLib.php";
-$dbname = $Opt['dbName'];
+$dbName = $Opt['dbName'];
 
 require_once "/var/www/util/hotcrp/hmac.php";
 // The download URL for the zip archive of final papers.
@@ -21,7 +21,7 @@ $shortName = $Opt['shortName'];
       <h3>LNCS Preparation</h3>
 <?php
 try {
-  $db = new PDO("mysql:host=localhost;dbname=$dbname;charset=utf8", $Opt['dbUser'], $Opt['dbPassword']);
+  $db = new PDO("mysql:host=localhost;dbname=$dbName;charset=utf8", $Opt['dbUser'], $Opt['dbPassword']);
   // outcome>0 and timeWithdrawn = 0 corresponds to an accepted paper. optionId is from create_conf.py when
   // the conference is first set up. It indicates that a final version was uploaded.
   $optionId = getFinalPaperOptionId();
