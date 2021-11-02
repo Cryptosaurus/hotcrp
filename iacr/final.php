@@ -3,6 +3,11 @@ include "../conf/options.php";
 include "../src/initweb.php";
 include "includes/header.inc";
 global $Opt;
+require_once "/var/www/util/hotcrp/hmac.php";
+// The download URL for the zip archive of final papers.
+$url = "https://iacr.org/submit/api/?action=download&venue=" . $Opt['iacrType'] . "&shortName=" . $Opt['dbName'] . "&year=" . $Opt['year'];
+$url .= "&auth=" . get_hmac(get_conf_message($Opt['dbName'], $Opt['iacrType'], $Opt['year']));
+$dbName = $Opt['dbName'];
 ?>
 <div class="container-fluid float-left">
   <div class="row">
@@ -24,6 +29,12 @@ global $Opt;
         way you can view who has signed the copyright forms, namely by
         <a href="../search?q=&t=acc#view">searching for accepted papers</a>
         and selecting "View options" to see how many have uploaded their final versions.
+      </p>
+      <p>
+        You can
+        <a style="font-weight: 600;" target="_blank"
+        <?php echo "href=\"$url\" download=\"$dbName.zip\"";?>>Download a Zip archive</a>  of all final versions of papers. (warning: this is slow).
+      </p>
       </p>
     </div>
   </div>
