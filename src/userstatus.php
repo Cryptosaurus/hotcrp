@@ -1524,7 +1524,10 @@ topics. We use this information to help match papers to reviewers.</p>',
                 "</div>
   <p class=\"f-h\">Example: “heavy”. Separate tags by spaces; the “pc” tag is set automatically.<br /><strong>Tip:</strong>&nbsp;Use <a href=\"", $us->conf->hoturl("settings", "group=tags"), "\">tag colors</a> to highlight subgroups in review lists.</p>\n";
         } else {
-            echo $itags, "<p class=\"f-h\">Tags represent PC subgroups and are set by administrators.</p>\n";
+            echo '<div class="', $us->control_class("contactTags", "f-i"), '" readonly>',
+                Ht::entry("contactTags", $qreq->contactTags ?? $itags, ["size" => 60, "data-default-value" => $itags]),
+                "</div>
+  <p class=\"f-h\">Tags represent PC subgroups and are set by administrators.</p>\n";
         }
     }
 
